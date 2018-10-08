@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.seckill.dao.AdminDao">
+
+	<!-- 管理员登录 -->
+	<select id="queryAdmin" resultType="Integer">
+		SELECT astate
+		FROM admins
+		WHERE aname = #{aname} AND apassword = #{apassword}
+	</select>
+	
+	<!-- 管理员登录 -->
+	<select id="queryAdminInfo" resultType="Admins">
+		SELECT *
+		FROM admins
+		WHERE aname = #{aname}
+	</select>
+
+	<!-- 管理员登录时间记录 -->
+	<insert id="insertDblogin" parameterType="Adlogin">
+		INSERT INTO adlogin(adid, aid, aditime, adotime)
+		VALUES(null, #{aid}, #{aditime}, #{adotime})
+	</insert>
+	
+	<!-- 管理员根据秒杀商品ID查询商品信息 -->
+	<select id="querySeckillById" resultType="Seckill" parameterType="long">
+		SELECT *
+        FROM seckill
+        WHERE seckill_id = #{seckillId}
+	</select>
+
+	<!-- 管理员查询秒杀商品列表 -->
+	<select id="querySeckillAll" resultType="Seckill">
+		SELECT *
+		FROM seckill
+		ORDER BY create_time DESC
+		limit #{offset},#{limit}
+	</select>
+
+	<!-- 后台管理员增加秒杀商品 -->
+	<insert id="insertSeckill" parameterType="Seckill">
+		INSERT INTO
+		seckill(seckill_id, name, number, start_time, end_time, create_time)
+		VALUES(null, #{name}, #{number}, #{startTime}, #{endTime}, #{createTime})
+	</insert>
+
+	<!-- 后台管理员修改秒杀商品信息 -->
+	<update id="updateSeckill" parameterType="Seckill">
+		UPDATE seckill
+		SET name = #{name}, number = #{number}, start_time = #{startTime}, 
+			end_time = #{endTime}, create_time = #{createTime}
+		WHERE seckill_id = #{seckillId}
+	</update>
+
+	<!-- 后台管理员删除秒杀商品信息 -->
+	<delete id="deleteSeckillById" parameterType="long">
+		DELETE FROM seckill
+		WHERE seckill_id = #{seckillId}
+	</delete>
+
+	<!-- 后台管理查看所有用户成功的秒杀记录 -->
+	<select id="querySeckillUserAll" resultType="SuccessKilled">
+		SELECT
+			sk.seckill_id,
+			sk.user_phone,
+			sk.create_time,
+			sk.state,
+			s.seckill_id "seckill.seckill_id",
+			s.name "seckill.name",
+			s.start_time "seckill.start_time",
+			s.end_time "seckill.end_time"
+		FROM success_killed sk, seckill s
+		WHERE sk.seckill_id = s.seckill_id
+		ORDER BY sk.create_time DESC
+	</select>
+
+</mapper>
